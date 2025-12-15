@@ -1,0 +1,47 @@
+{
+  "common": {
+    "home": "Ana Sayfa",
+    "rewards": "Ödüller",
+    "profile": "Profil",
+    "close": "Kapat",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "confirm": "Onayla"
+  },
+  "profile": {
+    "crownBalance": "Taç Bakiyesi",
+    "transactionHistory": "İşlem Geçmişi",
+    "allTransactions": "Tüm İşlemler",
+    "displayName": "Görünen Ad",
+    "appLanguage": "Uygulama Dili",
+    "selectedLanguage": "Seçili Dil",
+    "settings": "Ayarlar",
+    "inviteFriends": "Arkadaşlarını davet et — taç kazan!",
+    "inviteDescription": "Aşağıdaki bağlantılardan birini kullanarak bir arkadaş davet edin!",
+    "yourReferralLinks": "Referans Bağlantılarınız",
+    "yourReferrals": "Referanslarınız",
+    "allReferrals": "Tüm Referanslar",
+    "onlyWatchedAccounts": "Yalnızca en az bir dizi izlemiş hesaplar sayılır.",
+    "yourReferralCode": "Referans Kodunuz",
+    "shareReferralCode": "Bu bağlantıyı arkadaşlarınızla paylaşın"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "changeName": "Adı Değiştir",
+    "changeNameQuestion": "Görünen adı gerçekten değiştirmek istiyor musunuz?",
+    "changeNameButton": "Adı Değiştir",
+    "enterNewName": "Yeni adı girin",
+    "currentName": "Mevcut Ad",
+    "changeLanguage": "Dili Değiştir",
+    "changeLanguageQuestion": "Arayüz dilini gerçekten değiştirmek istiyor musunuz?",
+    "changeLanguageButton": "Dili Değiştir"
+  },
+  "languages": {
+    "russian": "Rusça",
+    "english": "İngilizce",
+    "hindi": "Hintçe",
+    "portuguese": "Portekizce",
+    "turkish": "Türkçe"
+  }
+}
+

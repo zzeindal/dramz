@@ -1,0 +1,50 @@
+{
+  "common": {
+    "home": "Главная",
+    "rewards": "Награды",
+    "profile": "Профиль",
+    "close": "Закрыть",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить"
+  },
+  "profile": {
+    "crownBalance": "Баланс корон",
+    "transactionHistory": "История транзакций",
+    "allTransactions": "Все транзакции",
+    "displayName": "Отображаемое имя",
+    "appLanguage": "Язык приложения",
+    "selectedLanguage": "Выбранный язык",
+    "settings": "Настройки",
+    "inviteFriends": "Приглашай друзей — получай короны !",
+    "inviteDescription": "Пригласи друга по одной из ссылок ниже!",
+    "yourReferralLinks": "Ваши реферальные ссылки",
+    "yourReferrals": "Ваши рефераллы",
+    "allReferrals": "Все рефераллы",
+    "onlyWatchedAccounts": "Считаются только те аккаунты, которые посмотрели хотя бы одну серию.",
+    "yourReferralCode": "Ваш реферальный код",
+    "shareReferralCode": "Поделитесь этой ссылкой с друзьями",
+    "authRequired": "Для доступа к профилю необходимо авторизоваться",
+    "authDescription": "Перейдите в Telegram бот и выполните команду /start",
+    "goToTelegram": "Перейти в Telegram бот"
+  },
+  "settings": {
+    "title": "Настройки",
+    "changeName": "Смена имени",
+    "changeNameQuestion": "Вы действительно хотите изменить отображаемое имя ?",
+    "changeNameButton": "Изменить имя",
+    "enterNewName": "Введите новое имя",
+    "currentName": "Текущее имя",
+    "changeLanguage": "Смена языка",
+    "changeLanguageQuestion": "Вы действительно хотите изменить язык интерфейса?",
+    "changeLanguageButton": "Изменить язык"
+  },
+  "languages": {
+    "russian": "Русский",
+    "english": "Английский",
+    "hindi": "Хинди",
+    "portuguese": "Португальский",
+    "turkish": "Турецкий"
+  }
+}
+

@@ -1,0 +1,50 @@
+{
+  "common": {
+    "home": "Home",
+    "rewards": "Rewards",
+    "profile": "Profile",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "profile": {
+    "crownBalance": "Crown Balance",
+    "transactionHistory": "Transaction History",
+    "allTransactions": "All Transactions",
+    "displayName": "Display Name",
+    "appLanguage": "App Language",
+    "selectedLanguage": "Selected Language",
+    "settings": "Settings",
+    "inviteFriends": "Invite friends — get crowns!",
+    "inviteDescription": "Invite a friend using one of the links below!",
+    "yourReferralLinks": "Your Referral Links",
+    "yourReferrals": "Your Referrals",
+    "allReferrals": "All Referrals",
+    "onlyWatchedAccounts": "Only accounts that have watched at least one series are counted.",
+    "yourReferralCode": "Your Referral Code",
+    "shareReferralCode": "Share this link with your friends",
+    "authRequired": "Authorization required to access profile",
+    "authDescription": "Go to Telegram bot and run /start command",
+    "goToTelegram": "Go to Telegram bot"
+  },
+  "settings": {
+    "title": "Settings",
+    "changeName": "Change Name",
+    "changeNameQuestion": "Do you really want to change the displayed name?",
+    "changeNameButton": "Change Name",
+    "enterNewName": "Enter new name",
+    "currentName": "Current Name",
+    "changeLanguage": "Change Language",
+    "changeLanguageQuestion": "Do you really want to change the interface language?",
+    "changeLanguageButton": "Change Language"
+  },
+  "languages": {
+    "russian": "Russian",
+    "english": "English",
+    "hindi": "Hindi",
+    "portuguese": "Portuguese",
+    "turkish": "Turkish"
+  }
+}
+

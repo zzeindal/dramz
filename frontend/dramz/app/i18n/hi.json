@@ -1,0 +1,47 @@
+{
+  "common": {
+    "home": "होम",
+    "rewards": "पुरस्कार",
+    "profile": "प्रोफ़ाइल",
+    "close": "बंद करें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें"
+  },
+  "profile": {
+    "crownBalance": "क्राउन बैलेंस",
+    "transactionHistory": "लेनदेन इतिहास",
+    "allTransactions": "सभी लेनदेन",
+    "displayName": "प्रदर्शन नाम",
+    "appLanguage": "ऐप भाषा",
+    "selectedLanguage": "चयनित भाषा",
+    "settings": "सेटिंग्स",
+    "inviteFriends": "दोस्तों को आमंत्रित करें — क्राउन प्राप्त करें!",
+    "inviteDescription": "नीचे दिए गए लिंक में से एक का उपयोग करके एक दोस्त को आमंत्रित करें!",
+    "yourReferralLinks": "आपके रेफ़रल लिंक",
+    "yourReferrals": "आपके रेफ़रल",
+    "allReferrals": "सभी रेफ़रल",
+    "onlyWatchedAccounts": "केवल वे खाते गिने जाते हैं जिन्होंने कम से कम एक श्रृंखला देखी है।",
+    "yourReferralCode": "आपका रेफ़रल कोड",
+    "shareReferralCode": "इस लिंक को अपने दोस्तों के साथ साझा करें"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "changeName": "नाम बदलें",
+    "changeNameQuestion": "क्या आप वास्तव में प्रदर्शित नाम बदलना चाहते हैं?",
+    "changeNameButton": "नाम बदलें",
+    "enterNewName": "नया नाम दर्ज करें",
+    "currentName": "वर्तमान नाम",
+    "changeLanguage": "भाषा बदलें",
+    "changeLanguageQuestion": "क्या आप वास्तव में इंटरफ़ेस भाषा बदलना चाहते हैं?",
+    "changeLanguageButton": "भाषा बदलें"
+  },
+  "languages": {
+    "russian": "रूसी",
+    "english": "अंग्रेजी",
+    "hindi": "हिंदी",
+    "portuguese": "पुर्तगाली",
+    "turkish": "तुर्की"
+  }
+}
+

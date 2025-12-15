@@ -1,0 +1,47 @@
+{
+  "common": {
+    "home": "Início",
+    "rewards": "Recompensas",
+    "profile": "Perfil",
+    "close": "Fechar",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar"
+  },
+  "profile": {
+    "crownBalance": "Saldo de Coroas",
+    "transactionHistory": "Histórico de Transações",
+    "allTransactions": "Todas as Transações",
+    "displayName": "Nome de Exibição",
+    "appLanguage": "Idioma do Aplicativo",
+    "selectedLanguage": "Idioma Selecionado",
+    "settings": "Configurações",
+    "inviteFriends": "Convide amigos — ganhe coroas!",
+    "inviteDescription": "Convide um amigo usando um dos links abaixo!",
+    "yourReferralLinks": "Seus Links de Indicação",
+    "yourReferrals": "Suas Indicações",
+    "allReferrals": "Todas as Indicações",
+    "onlyWatchedAccounts": "Apenas contas que assistiram pelo menos uma série são contadas.",
+    "yourReferralCode": "Seu Código de Indicação",
+    "shareReferralCode": "Compartilhe este link com seus amigos"
+  },
+  "settings": {
+    "title": "Configurações",
+    "changeName": "Alterar Nome",
+    "changeNameQuestion": "Você realmente deseja alterar o nome exibido?",
+    "changeNameButton": "Alterar Nome",
+    "enterNewName": "Digite o novo nome",
+    "currentName": "Nome Atual",
+    "changeLanguage": "Alterar Idioma",
+    "changeLanguageQuestion": "Você realmente deseja alterar o idioma da interface?",
+    "changeLanguageButton": "Alterar Idioma"
+  },
+  "languages": {
+    "russian": "Russo",
+    "english": "Inglês",
+    "hindi": "Hindi",
+    "portuguese": "Português",
+    "turkish": "Turco"
+  }
+}
+
