@@ -12,6 +12,7 @@ export default function NewSeriesPage() {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState<number | "">("")
+  const [freeEpisodesCount, setFreeEpisodesCount] = useState<number | "">("")
   const [cover, setCover] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -39,6 +40,9 @@ export default function NewSeriesPage() {
       fd.append("title", title)
       fd.append("description", description)
       fd.append("price", String(price))
+      if (freeEpisodesCount !== "" && !Number.isNaN(Number(freeEpisodesCount))) {
+        fd.append("freeEpisodesCount", String(freeEpisodesCount))
+      }
       fd.append("cover", fileToSend)
       await apiUpload("/admin/series", fd)
       router.replace("/series")
@@ -68,6 +72,10 @@ export default function NewSeriesPage() {
         <div>
           <Label>Цена</Label>
           <Input type="number" placeholder="0" onChange={e => setPrice(Number(e.target.value))} />
+        </div>
+        <div>
+          <Label>Количество бесплатных эпизодов</Label>
+          <Input type="number" placeholder="0" onChange={e => setFreeEpisodesCount(e.target.value === "" ? "" : Number(e.target.value))} />
         </div>
         <div>
           <Label>Обложка</Label>

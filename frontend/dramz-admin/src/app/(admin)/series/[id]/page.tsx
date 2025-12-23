@@ -13,6 +13,7 @@ type Series = {
   title: string
   description: string
   price: number
+  freeEpisodesCount?: number
   isVisible?: boolean
   coverUrl?: string
 }
@@ -140,6 +141,7 @@ export default function SeriesDetailPage() {
               <h2 className="text-2xl font-semibold">{item.title}</h2>
               <p className="text-gray-500 dark:text-white">{item.description}</p>
               <p>Цена: {item.price}</p>
+              {item.freeEpisodesCount !== undefined && <p>Бесплатных эпизодов: {item.freeEpisodesCount}</p>}
               <p>Видимость: {item.isVisible ? "Да" : "Нет"}</p>
               <div className="flex gap-2 pt-2">
                 <Link href={`/series/${id}/edit`}>

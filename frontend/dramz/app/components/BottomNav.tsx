@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslation } from '../hooks/useTranslation'
+import { useIsIOS } from '../hooks/useIsIOS'
 
 const HomeIcon = ({ active }: { active: boolean }) => {
   const opacity = active ? '0.8' : '0.4'
@@ -50,6 +51,7 @@ const ProfileIcon = ({ active }: { active: boolean }) => {
 export default function BottomNav() {
   const pathname = usePathname()
   const { t } = useTranslation()
+  const isIOS = useIsIOS()
   
   const items = [
     { href: '/', label: t('common.home'), icon: HomeIcon },
@@ -58,7 +60,20 @@ export default function BottomNav() {
   ]
   
   return (
-    <nav className="safe-bottom fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-10 bg-[#0f0b1d] border-t border-[#261f3f]">
+    <nav 
+      className={`safe-bottom fixed left-1/2 -translate-x-1/2 z-10 ${
+        isIOS 
+          ? 'bottom-4 rounded-full w-[calc(100%-2rem)] max-w-[calc(480px-2rem)] border border-white/20' 
+          : 'bottom-0 w-full max-w-[480px] border-t border-[#261f3f]'
+      }`}
+      style={isIOS ? {
+        backgroundColor: 'rgba(15, 11, 29, 0.7)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      } : {
+        backgroundColor: '#0f0b1d',
+      }}
+    >
       <div className="grid grid-cols-3">
         {items.map(i => {
           const active = pathname === i.href
@@ -67,7 +82,7 @@ export default function BottomNav() {
             <Link
               key={i.href}
               href={i.href}
-              className={`flex flex-col items-center py-2 ${active ? 'text-white/80' : 'text-white/40'}`}
+              className={`flex flex-col items-center py-3 ${active ? 'text-white/80' : 'text-white/40'}`}
             >
               <div className="text-lg">
                 <IconComponent active={active} />

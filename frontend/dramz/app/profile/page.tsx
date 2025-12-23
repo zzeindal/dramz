@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { RootState } from '../state/store'
 import BottomSheet from '../components/BottomSheet'
 import CrownIcon from '../components/CrownIcon'
@@ -13,72 +13,15 @@ import { languageNames } from '../i18n'
 import { useSeriesList } from '@/hooks/useSeriesList'
 import { API_BASE_URL } from '@/lib/api/client'
 import { openModal } from '../state/slices/ui'
-import { getUserReferrals } from '@/lib/api/user'
+import { getUserReferrals, getUserProfile } from '@/lib/api/user'
+import { setUser, setApiUser, setReferralCode } from '../state/slices/auth'
 
 const AVATARS = [
-  { id: 1, url: '/avatar1.png' },
-  { id: 2, url: '/avatar2.png' },
-  { id: 3, url: '/avatar3.png' }
+  { id: 1, url: '/avatar-1.jpg' },
+  { id: 2, url: '/avatar-2.jpg' }
 ]
 
-const MOCK_TRANSACTIONS = [
-  {
-    id: 1,
-    type: 'purchase',
-    description: 'Покупка серий',
-    amount: -10,
-    crowns: -10,
-    usdt: -5,
-    date: '04.10.2025',
-    time: '12:21',
-    seriesName: 'Love is Evil',
-    seriesCount: '20 серий',
-    paymentMethod: 'VISA'
-  },
-  {
-    id: 2,
-    type: 'purchase',
-    description: 'Покупка серий',
-    amount: -10,
-    crowns: 0,
-    usdt: -10,
-    date: '04.10.2025',
-    time: '12:21',
-    seriesName: 'Another Series',
-    seriesCount: '10 серий',
-    paymentMethod: 'VISA'
-  },
-  {
-    id: 3,
-    type: 'activity',
-    description: 'Активность',
-    amount: 20,
-    crowns: 20,
-    usdt: 0,
-    date: '04.10.2025',
-    time: '12:21'
-  },
-  {
-    id: 4,
-    type: 'activity',
-    description: 'Активность',
-    amount: 1,
-    crowns: 1,
-    usdt: 0,
-    date: '04.10.2025',
-    time: '12:21'
-  },
-  {
-    id: 5,
-    type: 'activity',
-    description: 'Активность',
-    amount: 5,
-    crowns: 5,
-    usdt: 0,
-    date: '04.10.2025',
-    time: '12:21'
-  }
-]
+const MOCK_TRANSACTIONS: any[] = []
 
 const DefaultAvatarIcon = () => (
   <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -148,6 +91,7 @@ const RedCrownIcon = ({ className }: { className?: string }) => (
 
 export default function ProfilePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const dispatch = useDispatch()
   const user = useSelector((s: RootState) => s.auth.user)
   const apiUser = useSelector((s: RootState) => s.auth.apiUser)
@@ -158,7 +102,18 @@ export default function ProfilePage() {
   const [isAvatarSheetOpen, setIsAvatarSheetOpen] = useState(false)
   const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null)
   const [tempSelectedAvatar, setTempSelectedAvatar] = useState<number | null>(null)
-  const [selectedTab, setSelectedTab] = useState<'crown' | 'friends' | 'settings' | 'favorites'>('crown')
+  const [selectedTab, setSelectedTab] = useState<'crown' | 'friends' | 'settings' | 'favorites'>(() => {
+    if (typeof window === 'undefined') return 'crown'
+    const tabParam = searchParams.get('tab')
+    if (tabParam === 'crown' || tabParam === 'friends' || tabParam === 'settings' || tabParam === 'favorites') {
+      return tabParam
+    }
+    const stored = window.localStorage.getItem('profileSelectedTab')
+    if (stored === 'crown' || stored === 'friends' || stored === 'settings' || stored === 'favorites') {
+      return stored
+    }
+    return 'crown'
+  })
   const [selectedTransaction, setSelectedTransaction] = useState<typeof MOCK_TRANSACTIONS[0] | null>(null)
   const { data: allSeries, loading: seriesLoading } = useSeriesList()
   const [favoriteIds, setFavoriteIds] = useState<string[]>([])
@@ -178,6 +133,33 @@ export default function ProfilePage() {
   }, [])
 
   useEffect(() => {
+    const fetchProfile = async () => {
+      if (!accessToken || apiUser) return
+      
+      try {
+        const profile = await getUserProfile(accessToken)
+        if (profile) {
+          const user: any = {
+            id: profile.telegramId,
+            username: profile.username || undefined,
+            first_name: profile.displayName?.split(' ')[0] || undefined,
+            last_name: profile.displayName?.split(' ').slice(1).join(' ') || undefined
+          }
+          dispatch(setUser(user))
+          dispatch(setApiUser(profile))
+          if (profile.referralCode) {
+            dispatch(setReferralCode(profile.referralCode))
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile:', error)
+      }
+    }
+
+    fetchProfile()
+  }, [accessToken, apiUser, dispatch])
+
+  useEffect(() => {
     const fetchReferrals = async () => {
       if (!accessToken || selectedTab !== 'friends') return
       
@@ -194,6 +176,17 @@ export default function ProfilePage() {
 
     fetchReferrals()
   }, [accessToken, selectedTab])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem('profileSelectedTab', selectedTab)
+  }, [selectedTab])
+
+  const handleTabChange = (tab: 'crown' | 'friends' | 'settings' | 'favorites') => {
+    setSelectedTab(tab)
+    const query = tab === 'crown' ? '' : `?tab=${tab}`
+    router.replace(`/profile${query}`)
+  }
 
   const favoriteSeries = allSeries?.filter(series => favoriteIds.includes(series._id)) || []
 
@@ -246,18 +239,18 @@ export default function ProfilePage() {
 
           <div className="mt-4 text-center">
             <div className="text-lg font-semibold text-white">
-              {displayName || user?.first_name || user?.username || ''}
+              {displayName || apiUser?.displayName || user?.first_name || user?.username || ''}
             </div>
-            {user?.username && (
+            {(user?.username || apiUser?.username) && (
               <div className="text-sm text-white/70 mt-1">
-                @{user.username}
+                @{apiUser?.username || user?.username}
               </div>
             )}
           </div>
 
           <div className="mt-6  flex items-center justify-center relative">
             <button
-              onClick={() => setSelectedTab('crown')}
+              onClick={() => handleTabChange('crown')}
               className="flex flex-col items-center gap-1"
             >
               <div className={selectedTab === 'crown' ? 'opacity-100' : 'opacity-80'}>
@@ -268,7 +261,7 @@ export default function ProfilePage() {
               </div>
             </button>
             <button
-              onClick={() => setSelectedTab('friends')}
+              onClick={() => handleTabChange('friends')}
               className="flex flex-col items-center gap-1"
             >
               <div className={selectedTab === 'friends' ? 'opacity-100' : 'opacity-80'}>
@@ -279,7 +272,7 @@ export default function ProfilePage() {
               </div>
             </button>
             <button
-              onClick={() => setSelectedTab('settings')}
+              onClick={() => handleTabChange('settings')}
               className="flex flex-col items-center gap-1"
             >
               <div className={selectedTab === 'settings' ? 'opacity-100' : 'opacity-80'}>
@@ -290,7 +283,7 @@ export default function ProfilePage() {
               </div>
             </button>
             <button
-              onClick={() => setSelectedTab('favorites')}
+              onClick={() => handleTabChange('favorites')}
               className="flex flex-col items-center gap-1"
             >
               <div className={selectedTab === 'favorites' ? 'opacity-100' : 'opacity-80'}>
@@ -344,27 +337,47 @@ export default function ProfilePage() {
               </button>
             </div>
             <div className="space-y-0">
-              {MOCK_TRANSACTIONS.slice(0, 5).map((transaction) => (
-                <button
-                  key={transaction.id}
-                  onClick={() => setSelectedTransaction(transaction)}
-                  className="w-full flex items-center justify-between py-3 border-b border-[#261f3f] last:border-0 text-left"
+              {MOCK_TRANSACTIONS.length === 0 ? (
+                <div
+                  style={{
+                    background: 'linear-gradient(to top, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 80%)',
+                    borderRadius: '9px',
+                    pointerEvents: 'none',
+                    padding: '1px'
+                  }}
                 >
-                  <div className="text-white text-sm">{transaction.description}</div>
                   <div
-                    className={`text-sm font-medium flex items-center gap-1 ${transaction.amount > 0 ? 'text-[#8F37FF]' : 'text-red-500'
-                      }`}
+                    className="rounded-[8px] px-4 py-3 h-full w-full text-sm text-white/80 text-center relative overflow-hidden"
+                    style={{
+                      backgroundColor: 'rgba(20, 16, 38, 0.9)'
+                    }}
                   >
-                    {transaction.amount > 0 ? '+' : ''}
-                    {transaction.amount}{' '}
-                    {transaction.amount > 0 ? (
-                      <CrownIcon className="w-4 h-4" />
-                    ) : (
-                      <RedCrownIcon className="w-4 h-4" />
-                    )}
+                    {t('profile.noTransactions')}
                   </div>
-                </button>
-              ))}
+                </div>
+              ) : (
+                MOCK_TRANSACTIONS.slice(0, 5).map((transaction) => (
+                  <button
+                    key={transaction.id}
+                    onClick={() => setSelectedTransaction(transaction)}
+                    className="w-full flex items-center justify-between py-3 border-b border-[#261f3f] last:border-0 text-left"
+                  >
+                    <div className="text-white text-sm">{transaction.description}</div>
+                    <div
+                      className={`text-sm font-medium flex items-center gap-1 ${transaction.amount > 0 ? 'text-[#8F37FF]' : 'text-red-500'
+                        }`}
+                    >
+                      {transaction.amount > 0 ? '+' : ''}
+                      {transaction.amount}{' '}
+                      {transaction.amount > 0 ? (
+                        <CrownIcon className="w-4 h-4" />
+                      ) : (
+                        <RedCrownIcon className="w-4 h-4" />
+                      )}
+                    </div>
+                  </button>
+                ))
+              )}
             </div>
           </section>
         </>
@@ -455,9 +468,25 @@ export default function ProfilePage() {
             </div>
             <div className="space-y-0">
               {referralsLoading ? (
-                <div className="text-white/70 text-sm text-center py-4">Loading...</div>
+                <div className="text-white/70 text-sm text-center py-4">{t('profile.loading')}</div>
               ) : referrals.length === 0 ? (
-                <div className="text-white/70 text-sm text-center py-4">No referrals yet</div>
+                <div
+                  style={{
+                    background: 'linear-gradient(to top, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 80%)',
+                    borderRadius: '9px',
+                    pointerEvents: 'none',
+                    padding: '1px'
+                  }}
+                >
+                  <div
+                    className="rounded-[8px] px-4 py-3 h-full w-full text-sm text-white/80 text-center relative overflow-hidden"
+                    style={{
+                      backgroundColor: 'rgba(20, 16, 38, 0.9)'
+                    }}
+                  >
+                    {t('profile.noReferrals')}
+                  </div>
+                </div>
               ) : (
                 referrals.slice(0, 5).map((referral, index) => (
                   <div
@@ -533,7 +562,7 @@ export default function ProfilePage() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                У вас пока нет избранных сериалов
+                {t('profile.noFavorites')}
               </div>
             </div>
           )}
@@ -552,7 +581,7 @@ export default function ProfilePage() {
                   {t('profile.displayName')}
                 </div>
                 <div className="text-white/70 text-sm">
-                  {displayName || user?.first_name || user?.username || ''}
+                  {displayName || apiUser?.displayName || user?.first_name || user?.username || ''}
                 </div>
               </div>
               <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -581,10 +610,10 @@ export default function ProfilePage() {
             >
               <div>
                 <div className="text-white text-base font-medium mb-1">
-                  FAQ
+                  {t('profile.faq')}
                 </div>
                 <div className="text-white/70 text-sm">
-                  Часто задаваемые вопросы
+                  {t('profile.faqDescription')}
                 </div>
               </div>
               <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -598,30 +627,35 @@ export default function ProfilePage() {
       <BottomSheet
         open={isAvatarSheetOpen}
         onClose={() => setIsAvatarSheetOpen(false)}
-        title="Выберите аватар для профиля"
+        title={t('profile.selectAvatar')}
       >
         <div className="flex flex-col items-center gap-6">
-          <div className="flex gap-4 justify-center">
-            {AVATARS.map((avatar) => (
-              <button
-                key={avatar.id}
-                onClick={() => handleAvatarSelect(avatar.id)}
-                className={`w-20 h-20 rounded-full overflow-hidden flex items-center justify-center transition-all ${tempSelectedAvatar === avatar.id
-                  ? 'shadow-[0_0px_10px_rgba(143,55,255,0.4)] ring-2 ring-[#8F37FF]'
-                  : ''
-                  }`}
-              >
-                <img
-                  src={avatar.url}
-                  alt={`Avatar ${avatar.id}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.style.display = 'none'
-                  }}
-                />
-              </button>
-            ))}
+          <div className="flex gap-6 justify-center">
+            {AVATARS.map((avatar) => {
+              const currentSelected = tempSelectedAvatar !== null ? tempSelectedAvatar : selectedAvatar
+              const isSelected = currentSelected === avatar.id
+              return (
+                <button
+                  key={avatar.id}
+                  onClick={() => handleAvatarSelect(avatar.id)}
+                  className={`w-24 h-24 rounded-full overflow-hidden flex items-center justify-center transition-all relative ${isSelected
+                    ? 'ring-2 ring-[#8F37FF]'
+                    : ''
+                    }`}
+                >
+                  <img
+                    src={avatar.url}
+                    alt={`Avatar ${avatar.id}`}
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                    }}
+                  />
+                </button>
+              )
+            })}
           </div>
 
           <button
@@ -636,9 +670,9 @@ export default function ProfilePage() {
                 ? '0 4px 20px rgba(143, 55, 255, 0.4)'
                 : 'none'
             }}
-          >
-            Выбрать аватар
-          </button>
+            >
+              {t('profile.chooseAvatar')}
+            </button>
         </div>
       </BottomSheet>
 

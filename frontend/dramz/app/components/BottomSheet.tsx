@@ -1,15 +1,19 @@
 'use client'
 
 import { ReactNode, useEffect, useRef, useState } from 'react'
+import { useIsIOS } from '../hooks/useIsIOS'
 
 interface BottomSheetProps {
   open: boolean
   onClose: () => void
   children: ReactNode
   title?: string
+  height?: string | number
+  backgroundImage?: string
 }
 
-export default function BottomSheet({ open, onClose, children, title }: BottomSheetProps) {
+export default function BottomSheet({ open, onClose, children, title, height, backgroundImage }: BottomSheetProps) {
+  const isIOS = useIsIOS()
   const [isDragging, setIsDragging] = useState(false)
   const [currentY, setCurrentY] = useState(0)
   const startYRef = useRef(0)
@@ -98,10 +102,28 @@ export default function BottomSheet({ open, onClose, children, title }: BottomSh
     >
       <div
         ref={sheetRef}
-        className="w-full bg-[#0f0b1d] border-t border-[#261f3f] rounded-t-3xl text-white flex flex-col max-h-[90vh] overflow-hidden"
+        className={`w-full rounded-t-3xl text-white flex flex-col overflow-hidden ${
+          backgroundImage ? '' : `border-t border-[#261f3f] ${isIOS ? 'border-white/20' : ''}`
+        } ${height ? '' : 'max-h-[90vh]'}`}
         style={{
           transform: `translateY(${currentY}px)`,
-          transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+          transition: isDragging ? 'none' : 'transform 0.3s ease-out',
+          height: height ? (typeof height === 'number' ? `${height}px` : height) : undefined,
+          ...(backgroundImage ? {
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'top',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: 'transparent',
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
+          } : isIOS ? {
+            backgroundColor: 'rgba(15, 11, 29, 0.8)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          } : {
+            backgroundColor: '#0f0b1d',
+          })
         }}
       >
         <div 
@@ -116,7 +138,7 @@ export default function BottomSheet({ open, onClose, children, title }: BottomSh
             <div className="text-xl font-semibold mb-2 text-center">{title}</div>
           )}
         </div>
-        <div className="h-px bg-[#261f3f] flex-shrink-0" />
+        {!backgroundImage && <div className="h-px bg-[#261f3f] flex-shrink-0" />}
         <div className="p-4 overflow-y-auto flex-1">
           {children}
         </div>

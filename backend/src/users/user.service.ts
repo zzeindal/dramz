@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/commo
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
-import * as crypto from 'crypto';
+const crypto = require('crypto');
 import { User, UserDocument } from './schemas/user.schema';
 import { Purchase, PurchaseDocument } from './schemas/purchase.schema';
 import { View, ViewDocument } from './schemas/view.schema';

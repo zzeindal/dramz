@@ -7,7 +7,7 @@ import DatePicker from "@/components/form/date-picker"
 type SeriesStats = {
   series: { id: string; title: string }
   views: { total: number; byEpisode: Record<string, number> }
-  purchases: { count: number; revenue: number }
+  purchases: { count: number; totalCrownsSpent: number; currency: string }
 }
 
 export default function SeriesStatsPage() {
@@ -86,8 +86,9 @@ export default function SeriesStatsPage() {
               <div className="text-2xl font-semibold">{data.views.total}</div>
             </div>
             <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-800">
-              <div className="text-sm text-gray-500">Доход</div>
-              <div className="text-2xl font-semibold">{data.purchases.revenue}</div>
+              <div className="text-sm text-gray-500">Покупки</div>
+              <div className="text-2xl font-semibold">{data.purchases.count}</div>
+              <div className="text-sm text-gray-500">Потрачено корон: {data.purchases.totalCrownsSpent}</div>
             </div>
           </div>
           <div className="mt-6">

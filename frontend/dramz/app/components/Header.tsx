@@ -36,7 +36,12 @@ export default function Header({ isFullscreen = false }: { isFullscreen?: boolea
   }, [showBackButton, router])
 
   return (
-    <header className={`py-2 px-4 flex items-center justify-center z-50 w-full`} style={{ paddingTop: isFullscreen ? 'calc(env(safe-area-inset-top, 0px) + 8px)' : 'calc(env(safe-area-inset-top, 0px) + 10px)' }}>
+    <header 
+      className={`py-2 px-4 flex items-center justify-center z-50 w-full`}
+      style={{ 
+        paddingTop: isFullscreen ? 'calc(env(safe-area-inset-top, 0px) + 8px)' : 'calc(env(safe-area-inset-top, 0px) + 10px)',
+      }}
+    >
       <div className='w-full mt-4 flex justify-center items-center'>
         <Logo />
       </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../state/store'
@@ -11,9 +11,11 @@ import { useTranslation } from '../hooks/useTranslation'
 
 export default function PageLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const isRewards = pathname === '/rewards'
   const isProfile = pathname === '/profile'
   const isProfileTransactions = pathname === '/profile/transactions' || pathname === '/profile/settings/name' || pathname === '/profile/settings/language' || pathname === '/profile/referrals/links' || pathname === '/profile/referrals/all'
+  const isGame = pathname === '/game'
   const [isFullscreen, setIsFullscreen] = useState(false)
   const user = useSelector((s: RootState) => s.auth.user)
   const apiUser = useSelector((s: RootState) => s.auth.apiUser)
@@ -22,6 +24,7 @@ export default function PageLayout({ children }: { children: React.ReactNode }) 
   const { t } = useTranslation()
   
   const showAuthPopup = authInitialized && !accessToken
+  const enableSwipeBack = !isGame && pathname !== '/'
 
   useEffect(() => {
     const checkFullscreen = () => {
@@ -47,6 +50,48 @@ export default function PageLayout({ children }: { children: React.ReactNode }) 
     }
   }, [])
 
+  useEffect(() => {
+    if (!enableSwipeBack) return
+
+    let startX = 0
+    let startY = 0
+    let tracking = false
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return
+      const touch = e.touches[0]
+      startX = touch.clientX
+      startY = touch.clientY
+      tracking = startX < 40
+    }
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!tracking) return
+      if (e.touches.length !== 1) return
+      const touch = e.touches[0]
+      const dx = touch.clientX - startX
+      const dy = Math.abs(touch.clientY - startY)
+      if (dx > 60 && dy < 40) {
+        tracking = false
+        router.back()
+      }
+    }
+
+    const handleTouchEnd = () => {
+      tracking = false
+    }
+
+    window.addEventListener('touchstart', handleTouchStart)
+    window.addEventListener('touchmove', handleTouchMove)
+    window.addEventListener('touchend', handleTouchEnd)
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchend', handleTouchEnd)
+    }
+  }, [enableSwipeBack, router])
+
   return (
     <div className={`flex flex-col min-h-screen overflow-y-auto app-frame ${isFullscreen ? 'safe-top-fullscreen' : 'safe-top'}`} style={isRewards || isProfileTransactions ? {
       backgroundImage: 'url(/bg-rewards.png)',
@@ -61,11 +106,11 @@ export default function PageLayout({ children }: { children: React.ReactNode }) 
     } : {
       backgroundColor: 'var(--bg-app, #0f0b1d)'
     }}>
-      <Header isFullscreen={isFullscreen} />
-      <div className='flex-1 pb-20 app-frame'>
+      {!isGame && <Header isFullscreen={isFullscreen} />}
+      <div className={`flex-1 ${isGame ? '' : 'pb-20'} app-frame`}>
         {children}
       </div>
-      <BottomNav />
+      {!isGame && <BottomNav />}
       
       <Modal
         open={showAuthPopup}

@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Response } from 'express';
-import * as crypto from 'crypto';
+const crypto = require('crypto');
 
 interface SSEClient {
   sessionId: string;
@@ -9,7 +9,7 @@ interface SSEClient {
 }
 
 @Injectable()
-export class SseAuthService {
+export class SseAuthService implements OnModuleDestroy {
   private clients: Map<string, SSEClient> = new Map();
   private readonly SESSION_TIMEOUT = 5 * 60 * 1000; // 5 минут
   private keepAliveInterval: NodeJS.Timeout | null = null;
@@ -103,10 +103,16 @@ export class SseAuthService {
       // Отправляем комментарий (keep-alive) всем активным клиентам
       for (const [sessionId, client] of this.clients.entries()) {
         try {
+          // Проверяем, что соединение еще активно
+          if (client.response.writableEnded || client.response.destroyed) {
+            this.closeClient(sessionId);
+            continue;
+          }
           // SSE комментарии начинаются с ":"
           client.response.write(': keep-alive\n\n');
         } catch (error) {
           // Если ошибка, закрываем соединение
+          console.error(`Error sending keep-alive to session ${sessionId}:`, error);
           this.closeClient(sessionId);
         }
       }
@@ -123,6 +129,11 @@ export class SseAuthService {
     }
 
     try {
+      // Проверяем, что соединение еще активно
+      if (client.response.writableEnded || client.response.destroyed) {
+        this.closeClient(sessionId);
+        return false;
+      }
       const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
       client.response.write(message);
       return true;
@@ -147,9 +158,13 @@ export class SseAuthService {
     const client = this.clients.get(sessionId);
     if (client) {
       try {
-        client.response.end();
+        // Проверяем, что response еще не закрыт
+        if (!client.response.writableEnded && !client.response.destroyed) {
+          client.response.end();
+        }
       } catch (error) {
         // Игнорируем ошибки при закрытии
+        console.error(`Error closing client ${sessionId}:`, error);
       }
       this.clients.delete(sessionId);
     }
@@ -181,5 +196,22 @@ export class SseAuthService {
   getActiveConnectionsCount(): number {
     return this.clients.size;
   }
-}
 
+  /**
+   * Очищает все ресурсы при остановке модуля
+   */
+  onModuleDestroy() {
+    // Останавливаем keep-alive интервал
+    if (this.keepAliveInterval) {
+      clearInterval(this.keepAliveInterval);
+      this.keepAliveInterval = null;
+    }
+
+    // Закрываем все активные соединения
+    for (const [sessionId] of this.clients.entries()) {
+      this.closeClient(sessionId);
+    }
+
+    console.log('SSE Auth Service: All connections closed and resources cleaned up');
+  }
+}

@@ -6,10 +6,13 @@ import { useRouter } from 'next/navigation'
 import { useSeriesList } from '@/hooks/useSeriesList'
 import { API_BASE_URL } from '@/lib/api/client'
 import PayButton from './components/PayButton'
+import BonusGameSection from './components/BonusGameSection'
+import { useTranslation } from './hooks/useTranslation'
 
 export default function Home() {
   const router = useRouter()
   const { data, loading, error } = useSeriesList()
+  const { t } = useTranslation()
   const [currentIndex, setCurrentIndex] = useState(0)
   const shows = data && data.length > 0 ? data.slice(0, 3) : []
   const show = shows[currentIndex] || null
@@ -19,7 +22,7 @@ export default function Home() {
   const touchEndX = useRef(0)
   const openWatch = () => {
     if (!show) return
-    router.push(`/series/${show._id}`)
+    router.push(`/watch/${show._id}`)
   }
 
   const scrollToSeriesList = () => {
@@ -58,12 +61,6 @@ export default function Home() {
   const goToSlide = (index: number) => {
     setCurrentIndex(index)
   }
-  // const backgroundStyle = {
-  //   backgroundImage: 'url("/bg-pages.png")',
-  //   backgroundSize: 'cover',
-  //   backgroundPosition: 'center center',
-  //   backgroundRepeat: 'no-repeat'
-  // }
 
   return (
     <div
@@ -121,7 +118,7 @@ export default function Home() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                <div>Не удалось загрузить сериал. Попробуйте позже.</div>
+                <div>{t('home.failedToLoadSeries')}</div>
                 {process.env.NODE_ENV === 'development' && (
                   <div className="text-xs text-red-400 mt-2 break-all">{error}</div>
                 )}
@@ -154,7 +151,7 @@ export default function Home() {
               </div>
               <div
                 key={`desc-${currentIndex}`}
-                className="text-center text-[12px] text-white/70 px-10 transition-all duration-500 ease-in-out animate-fade-in"
+                className="text-center text-[14px] font-medium text-white/80 px-10 transition-all duration-500 ease-in-out animate-fade-in"
               >
                 {show.description}
               </div>
@@ -168,7 +165,7 @@ export default function Home() {
                   <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0.790849 10.6667C0.921569 10.6667 1.04466 10.6421 1.16013 10.5929C1.2756 10.5437 1.40087 10.4833 1.53595 10.4117L9.93467 6.23229C10.2135 6.08917 10.4052 5.94829 10.5098 5.80965C10.6144 5.671 10.6667 5.51223 10.6667 5.33334C10.6667 5.15444 10.6144 4.99567 10.5098 4.85703C10.4052 4.71838 10.2135 4.57974 9.93467 4.44109L1.53595 0.254927C1.39651 0.187841 1.26906 0.128581 1.15359 0.0771487C1.03812 0.0257162 0.915032 0 0.784317 0C0.544664 0 0.354031 0.0872118 0.212418 0.261635C0.0708061 0.436059 0 0.668624 0 0.95933L0.00653594 9.70733C0.00653594 9.99805 0.0773419 10.2306 0.218954 10.405C0.360566 10.5794 0.551198 10.6667 0.790849 10.6667Z" fill="white" fillOpacity="0.8" />
                   </svg>
-                  <span>Смотреть</span>
+                  <span>{t('home.watch')}</span>
                 </PayButton>
                 <button
                   onClick={scrollToSeriesList}
@@ -199,7 +196,7 @@ export default function Home() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                Сериалы пока недоступны
+                {t('home.seriesNotAvailable')}
               </div>
             </div>
           )}
@@ -207,12 +204,12 @@ export default function Home() {
 
         <section ref={seriesListRef} className="mt-12 pb-8">
           <div className="px-4 flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Будущие новинки</h2>
+            <h2 className="text-2xl font-bold">{t('home.upcomingReleases')}</h2>
             <Link
               href="/all-series"
               className="text-sm text-white/80"
             >
-              Все новинки {'>'}
+              {t('home.allNewReleases')} {'>'}
             </Link>
           </div>
           {data && data.length > 0 ? (
@@ -268,13 +265,15 @@ export default function Home() {
                       backgroundColor: 'rgba(20, 16, 38, 0.9)'
                     }}
                   >
-                    Сериалы пока недоступны
+                    {t('home.seriesNotAvailable')}
                   </div>
                 </div>
               </div>
             )
           )}
         </section>
+
+        <BonusGameSection />
       </main>
     </div>
   )

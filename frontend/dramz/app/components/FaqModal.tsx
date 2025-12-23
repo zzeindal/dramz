@@ -5,14 +5,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../state/store'
 import { closeModal } from '../state/slices/ui'
 import { useFaq } from '@/hooks/useFaq'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function FaqModal() {
   const open = useSelector((s: RootState) => s.ui.modal === 'faq')
   const dispatch = useDispatch()
   const { data, loading, error } = useFaq()
+  const { t } = useTranslation()
   const items = data || []
   return (
-    <Modal open={open} onClose={() => dispatch(closeModal())} title="FAQ">
+    <Modal open={open} onClose={() => dispatch(closeModal())} title={t('profile.faq')}>
       <div className="flex flex-col">
         <div className="flex-1 space-y-0">
           {loading && (
@@ -27,7 +29,7 @@ export default function FaqModal() {
           )}
           {!loading && error && (
             <div className="text-xs text-red-300 text-center py-4">
-              Не удалось загрузить FAQ
+              {t('profile.faqLoadError')}
             </div>
           )}
           {!loading && !error && items.map((it, index) => (
@@ -38,7 +40,7 @@ export default function FaqModal() {
           ))}
           {!loading && !error && items.length === 0 && (
             <div className="text-xs text-white/70 text-center py-4">
-              FAQ пока пуст
+              {t('profile.faqEmpty')}
             </div>
           )}
         </div>
@@ -49,7 +51,7 @@ export default function FaqModal() {
             <circle cx="13" cy="9" r="1" fill="#9b5cff"/>
             <path d="M7 11.5C7.5 12 8.5 12.5 10 12.5C11.5 12.5 12.5 12 13 11.5" stroke="#9b5cff" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
-          <span className="font-semibold">Связаться с поддержкой</span>
+          <span className="font-semibold">{t('profile.contactSupport')}</span>
         </button>
       </div>
     </Modal>

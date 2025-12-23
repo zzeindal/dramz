@@ -8,10 +8,12 @@ import { useSeriesEpisodes } from '@/hooks/useSeriesEpisodes'
 import PayButton from '../../components/PayButton'
 import { API_BASE_URL } from '@/lib/api/client'
 import CrownIcon from '../../components/CrownIcon'
+import { useTranslation } from '../../hooks/useTranslation'
 
 export default function PurchasePage() {
   const params = useParams()
   const seriesId = params?.seriesId as string
+  const { t } = useTranslation()
   const [method, setMethod] = useState<'visa' | 'usdt'>('visa')
   const [crowns, setCrowns] = useState(0)
   const basePrice = 12
@@ -53,7 +55,7 @@ export default function PurchasePage() {
         </>
       )}
       <main className="w-full px-4 py-6 space-y-4 relative z-10">
-        <h1 className="text-2xl font-bold text-white mb-6">Покупка сериала</h1>
+        <h1 className="text-2xl font-bold text-white mb-6">{t('purchase.purchaseSeries')}</h1>
         {loading ? (
           <div className="space-y-4">
             <div
@@ -90,7 +92,7 @@ export default function PurchasePage() {
                 backgroundColor: 'rgba(20, 16, 38, 0.9)'
               }}
             >
-              Сериал не найден
+              {t('purchase.seriesNotFound')}
             </div>
           </div>
         ) : (
@@ -110,7 +112,7 @@ export default function PurchasePage() {
                 }}
               >
 
-                <div className="text-xs text-white/60 mb-1">Сериал</div>
+                <div className="text-xs text-white/60 mb-1">{t('purchase.series')}</div>
                 <div className="text-sm text-white font-medium">{show.title}</div>
               </div>
             </div>
@@ -128,7 +130,7 @@ export default function PurchasePage() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                <div className="text-xs text-white/60 mb-1">Кол-во серий</div>
+                <div className="text-xs text-white/60 mb-1">{t('purchase.episodeCount')}</div>
                 <div className="text-sm text-white font-medium">{episodesCount || '-'}</div>
               </div>
             </div>
@@ -146,7 +148,7 @@ export default function PurchasePage() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                <div className="text-xs text-white/60 mb-3">Способ оплат</div>
+                <div className="text-xs text-white/60 mb-3">{t('purchase.paymentMethod')}</div>
                 <div className="flex items-center gap-3" style={{ pointerEvents: 'auto' }}>
                   <button
                     onClick={() => setMethod('visa')}
@@ -161,7 +163,7 @@ export default function PurchasePage() {
                       className="w-full h-full object-cover"
                     />
                     {method === 'visa' && (
-                      <div className="absolute bottom-0 left-0 px-1 bg-white rounded-tr-md text-[10px] text-black font-medium opacity-90">Выбрано</div>
+                      <div className="absolute bottom-0 left-0 px-1 bg-white rounded-tr-md text-[10px] text-black font-medium opacity-90">{t('purchase.selected')}</div>
                     )}
                   </button>
                   <button
@@ -177,7 +179,7 @@ export default function PurchasePage() {
                       className="w-full h-full object-cover"
                     />
                     {method === 'usdt' && (
-                      <div className="absolute bottom-0 left-0 px-1 bg-white rounded-tr-md text-[10px] text-black font-medium opacity-90">Выбрано</div>
+                      <div className="absolute bottom-0 left-0 px-1 bg-white rounded-tr-md text-[10px] text-black font-medium opacity-90">{t('purchase.selected')}</div>
                     )}
                   </button>
                 </div>
@@ -199,7 +201,7 @@ export default function PurchasePage() {
                 }}
               >
                 <div className="text-xs text-white/60 flex items-center justify-between mb-3">
-                  <span>Добавить короны для скидки</span>
+                  <span>{t('purchase.addCrownsForDiscount')}</span>
                   <span className="text-xs flex items-center gap-1">1 USDT - {crownsPerUsdt} <CrownIcon /></span>
                 </div>
                 <div className="text-[16px] text-white font-medium min-w-[50px] flex items-center gap-1">{crowns} <CrownIcon className="w-4 h-4 text-[#fffff]" /></div>
@@ -240,7 +242,7 @@ export default function PurchasePage() {
                     backgroundColor: 'rgba(20, 16, 38, 0.9)'
                   }}
                 >
-                  <div className="text-xs text-white/60 mb-1">Скидка коронами</div>
+                  <div className="text-xs text-white/60 mb-1">{t('purchase.crownDiscount')}</div>
                   <div className="text-sm text-white font-medium flex items-center gap-1">{crowns} <CrownIcon /> = {discount.toFixed(0)} USDT</div>
                 </div>
               </div>
@@ -251,7 +253,7 @@ export default function PurchasePage() {
                   background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(112, 78, 215, 0.4) 100%)',
                 }}
               >
-                <div className="text-xs text-white/60 mb-1">Сумма к оплате</div>
+                <div className="text-xs text-white/60 mb-1">{t('purchase.amountToPay')}</div>
                 <div className="text-sm text-white font-semibold">{total.toFixed(0)} USDT</div>
               </div>
             </div>

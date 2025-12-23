@@ -11,6 +11,7 @@ import AllSeriesModal from './AllSeriesModal'
 import ChangeLanguageModal from './ChangeLanguageModal'
 import ChangeNameModal from './ChangeNameModal'
 import NoUsernameModal from './NoUsernameModal'
+import TermsModal from './TermsModal'
 
 export default function ModalRoot() {
   const modal = useSelector((s: RootState) => s.ui.modal)
@@ -23,6 +24,7 @@ export default function ModalRoot() {
   if (modal === 'changeLanguage') return <ChangeLanguageModal />
   if (modal === 'changeName') return <ChangeNameModal />
   if (modal === 'noUsername') return <NoUsernameModal />
+  if (modal === 'terms') return <TermsModal />
   return null
 }
 

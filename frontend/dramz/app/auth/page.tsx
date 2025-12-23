@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function AuthPage() {
+  const { t } = useTranslation()
   useEffect(() => {
     const botUsername = process.env.NEXT_PUBLIC_TG_BOT || 'dramztestbot'
     const mainDomain = process.env.NEXT_PUBLIC_WEB_APP_URL || 'https://dramz.tv'
@@ -33,7 +35,7 @@ export default function AuthPage() {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#0f0b1d]">
       <div className="text-center">
-        <h1 className="text-white text-2xl font-semibold mb-6">Войти через Telegram</h1>
+        <h1 className="text-white text-2xl font-semibold mb-6">{t('modals.loginViaTelegram')}</h1>
         <div id="telegram-widget" className="flex justify-center"></div>
       </div>
     </div>

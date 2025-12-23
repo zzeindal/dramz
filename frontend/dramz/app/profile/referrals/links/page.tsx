@@ -8,6 +8,7 @@ import { openModal } from '../../../state/slices/ui'
 import Header from '../../../components/Header'
 import { getUserReferrals } from '@/lib/api/user'
 import type { ReferralLink } from '@/types/api'
+import { useTranslation } from '../../../hooks/useTranslation'
 
 const WEB_APP_URL = process.env.NEXT_PUBLIC_WEB_APP_URL || 'https://dramz.tv'
 
@@ -65,6 +66,7 @@ export default function ReferralLinksPage() {
   const [referralLinks, setReferralLinks] = useState<ReferralLink[]>([])
   const [loading, setLoading] = useState(true)
   const [showCopyNotification, setShowCopyNotification] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!authInitialized) {
@@ -107,7 +109,7 @@ export default function ReferralLinksPage() {
       <main className="w-full relative min-h-screen app-frame">
         <section className="px-4 pt-4 relative z-10">
           <div className="text-white text-center py-8">
-            Loading...
+            {t('referrals.loading')}
           </div>
         </section>
       </main>
@@ -128,7 +130,7 @@ export default function ReferralLinksPage() {
       <main className="w-full relative min-h-screen app-frame">
         <section className="px-4 pt-4 relative z-10">
           <div className="text-white text-center py-8">
-            No referral links available
+            {t('referrals.noReferralLinks')}
           </div>
         </section>
       </main>
@@ -139,7 +141,7 @@ export default function ReferralLinksPage() {
     <main className="w-full relative min-h-screen app-frame">
       {showCopyNotification && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
-          Link copied!
+          {t('referrals.linkCopied')}
         </div>
       )}
       <section className="px-4 pt-4 relative z-10">
@@ -163,7 +165,7 @@ export default function ReferralLinksPage() {
                     <span className="text-white font-medium text-base">{platformInfo.name}</span>
                     {link.activatedCount > 0 && (
                       <span className="text-white/70 text-xs ml-auto">
-                        {link.activatedCount} activations
+                        {link.activatedCount} {t('referrals.activations')}
                       </span>
                     )}
                   </div>

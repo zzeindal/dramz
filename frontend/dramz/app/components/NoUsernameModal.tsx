@@ -5,6 +5,7 @@ import Modal from './Modal'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../state/store'
 import { closeModal } from '../state/slices/ui'
+import { useTranslation } from '../hooks/useTranslation'
 
 function ActionButton({ children, onClick }: { children: React.ReactNode, onClick: () => void }) {
   return <button onClick={onClick} className="w-full h-12 rounded-xl primary text-white font-medium">{children}</button>
@@ -36,15 +37,16 @@ export default function NoUsernameModal() {
   }
 
   const shouldShow = !!(modalOpen && apiUser && !apiUser.username)
+  const { t } = useTranslation()
 
   return (
-    <Modal open={shouldShow} onClose={() => {}} title="Войти через Telegram">
+    <Modal open={shouldShow} onClose={() => {}} title={t('modals.loginViaTelegram')}>
       <div className="space-y-4">
         <p className="text-white/80 text-center text-sm">
-          Для авторизации перейдите в Telegram и отправьте боту команду <b>/start</b>
+          {t('modals.authMessage')} <b>/start</b>
         </p>
         <p className="text-white/60 text-center text-xs">
-          После этого бот отправит вам ссылку для возврата на сайт
+          {t('modals.botWillSend')}
         </p>
         <a
           href={telegramBotUrl}
@@ -53,7 +55,7 @@ export default function NoUsernameModal() {
           className="block w-full"
         >
           <ActionButton onClick={() => {}}>
-            Перейти в Telegram
+            {t('modals.goToTelegram')}
           </ActionButton>
         </a>
       </div>

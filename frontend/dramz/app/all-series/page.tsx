@@ -3,11 +3,13 @@
 import { useRouter } from 'next/navigation'
 import { useSeriesList } from '@/hooks/useSeriesList'
 import { API_BASE_URL } from '@/lib/api/client'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function AllSeriesPage() {
   const router = useRouter()
   const { data, loading, error } = useSeriesList()
   const series = data || []
+  const { t } = useTranslation()
 
   const handleSeriesClick = (series: any) => {
     router.push(`/series/${series._id}`)
@@ -27,7 +29,7 @@ export default function AllSeriesPage() {
       <main className="w-full relative z-10">
 
         <section className="px-4">
-          <h1 className="text-2xl font-bold mb-6">Все новинки</h1>
+          <h1 className="text-2xl font-bold mb-6">{t('home.allNewReleases')}</h1>
           
           {loading && (
             <div className="grid grid-cols-3 gap-4">
@@ -55,7 +57,7 @@ export default function AllSeriesPage() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                Не удалось загрузить сериалы
+                {t('modals.failedToLoadSeries')}
               </div>
             </div>
           )}
@@ -94,7 +96,7 @@ export default function AllSeriesPage() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                Сериалы пока недоступны
+                {t('home.seriesNotAvailable')}
               </div>
             </div>
           )}

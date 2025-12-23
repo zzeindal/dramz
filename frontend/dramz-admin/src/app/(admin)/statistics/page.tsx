@@ -5,8 +5,9 @@ import DatePicker from "@/components/form/date-picker"
 
 type GlobalStats = {
   users: { total: number; inRange?: number }
-  views: { total: number }
-  revenue: { total: number }
+  views: { total: number; inRange?: number }
+  revenue: { usd: number; rub: number; telegramStars: number; totalUsd: number }
+  purchases: { totalCrownsSpent: number; totalPurchases: number; totalCrownPurchases: number }
   viewsByEpisode: { seriesId: string; seriesTitle: string; episodeNumber: number; views: number }[]
 }
 
@@ -74,7 +75,7 @@ export default function StatisticsPage() {
         <p>Загрузка...</p>
       ) : data ? (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-800">
               <div className="text-sm text-gray-500">Пользователи</div>
               <div className="text-2xl font-semibold">{data.users.total}</div>
@@ -83,10 +84,24 @@ export default function StatisticsPage() {
             <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-800">
               <div className="text-sm text-gray-500">Просмотры</div>
               <div className="text-2xl font-semibold">{data.views.total}</div>
+              {typeof data.views.inRange === "number" && <div className="text-sm text-gray-500">За период: {data.views.inRange}</div>}
             </div>
             <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-800">
-              <div className="text-sm text-gray-500">Доходы (короны)</div>
-              <div className="text-2xl font-semibold">{data.revenue.total}</div>
+              <div className="text-sm text-gray-500">Доходы (USD)</div>
+              <div className="text-2xl font-semibold">${data.revenue.totalUsd.toFixed(2)}</div>
+            </div>
+            <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+              <div className="text-sm text-gray-500">Доходы (RUB)</div>
+              <div className="text-2xl font-semibold">{data.revenue.rub.toFixed(2)} ₽</div>
+            </div>
+            <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+              <div className="text-sm text-gray-500">Telegram Stars</div>
+              <div className="text-2xl font-semibold">{data.revenue.telegramStars}</div>
+            </div>
+            <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+              <div className="text-sm text-gray-500">Покупки</div>
+              <div className="text-2xl font-semibold">{data.purchases.totalPurchases}</div>
+              <div className="text-sm text-gray-500">Потрачено корон: {data.purchases.totalCrownsSpent}</div>
             </div>
           </div>
           <div className="mt-6">

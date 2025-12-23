@@ -2,6 +2,7 @@
 
 import Modal from './Modal'
 import CrownIcon from './CrownIcon'
+import { useTranslation } from '../hooks/useTranslation'
 
 type Transaction = {
   id: number
@@ -24,7 +25,8 @@ export default function TransactionDetailModal({
   transaction: Transaction
   onClose: () => void
 }) {
-  const title = transaction.type === 'purchase' ? 'Покупка серий' : transaction.description
+  const { t } = useTranslation()
+  const title = transaction.type === 'purchase' ? t('profile.purchaseSeries') : transaction.description
 
   return (
     <Modal open={true} onClose={onClose} title={title}>
@@ -44,7 +46,7 @@ export default function TransactionDetailModal({
             }}
           >
             <div className="text-white/70 text-sm">
-              {transaction.type === 'purchase' ? 'Дата покупки:' : 'Дата:'}
+              {transaction.type === 'purchase' ? t('transactions.purchaseDate') : t('transactions.date')}
             </div>
             <div className="text-white text-sm flex items-center gap-2">
               <span>{transaction.date}</span>
@@ -68,7 +70,7 @@ export default function TransactionDetailModal({
                 backgroundColor: 'rgba(20, 16, 38, 0.9)'
               }}
             >
-              <div className="text-white/70 text-sm">Куплено:</div>
+              <div className="text-white/70 text-sm">{t('transactions.purchased')}</div>
               <div className="text-white text-sm text-right">
                 <div>{transaction.seriesName}</div>
                 <div className="text-white/50 text-xs mt-0.5">{transaction.seriesCount}</div>
@@ -92,7 +94,7 @@ export default function TransactionDetailModal({
                 backgroundColor: 'rgba(20, 16, 38, 0.9)'
               }}
             >
-              <div className="text-white/70 text-sm">Списано средств:</div>
+              <div className="text-white/70 text-sm">{t('transactions.deductedFunds')}</div>
               <div className="text-white text-sm">{Math.abs(transaction.usdt)} USDT</div>
             </div>
           </div>
@@ -114,7 +116,7 @@ export default function TransactionDetailModal({
               }}
             >
               <div className="text-white/70 text-sm">
-                {transaction.amount > 0 ? 'Начислено корон:' : 'Списано корон:'}
+                {transaction.amount > 0 ? t('transactions.crownsCredited') : t('transactions.crownsDebited')}
               </div>
               <div className="flex items-center gap-2">
                 <div className={`text-sm flex items-center gap-1 ${transaction.amount > 0 ? 'text-[#8F37FF]' : 'text-white'}`}>
@@ -143,7 +145,7 @@ export default function TransactionDetailModal({
                 backgroundColor: 'rgba(20, 16, 38, 0.9)'
               }}
             >
-              <div className="text-white/70 text-sm mb-3">Способ оплаты:</div>
+              <div className="text-white/70 text-sm mb-3">{t('transactions.paymentMethod')}</div>
               <img src="/visa.svg" alt="VISA" className="h-12 border rounded-md object-cover" />
             </div>
           </div>

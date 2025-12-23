@@ -1,6 +1,7 @@
 'use client'
 
 import { ButtonHTMLAttributes, ReactNode } from 'react'
+import { useTranslation } from '../hooks/useTranslation'
 
 interface PayButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   amount: number | string
@@ -16,6 +17,7 @@ export default function PayButton({
   className = '',
   ...props 
 }: PayButtonProps) {
+  const { t } = useTranslation()
   return (
     <button
       className={`w-full h-12 text-white font-medium shadow-lg hover:shadow-xl transition-all ${className}`}
@@ -25,7 +27,7 @@ export default function PayButton({
       }}
       {...props}
     >
-      {children || `Оплатить ${amount} ${currency}`}
+      {children || t('modals.pay').replace('{amount}', amount.toString()).replace('{currency}', currency)}
     </button>
   )
 }

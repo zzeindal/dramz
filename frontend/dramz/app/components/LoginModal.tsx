@@ -5,6 +5,7 @@ import Modal from './Modal'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../state/store'
 import { closeModal } from '../state/slices/ui'
+import { useTranslation } from '../hooks/useTranslation'
 
 function ActionButton({ children, onClick }: { children: React.ReactNode, onClick: () => void }) {
   return <button onClick={onClick} className="w-full h-12 rounded-xl primary text-white font-medium">{children}</button>
@@ -44,15 +45,16 @@ export default function LoginModal() {
   }
 
   const shouldShow = modalOpen && !user && !accessToken
+  const { t } = useTranslation()
 
   return (
-    <Modal open={shouldShow} onClose={() => {}} title="Вы не авторизованы">
+    <Modal open={shouldShow} onClose={() => {}} title={t('modals.notAuthorized')}>
       <div className="space-y-4">
         <p className="text-white/80 text-center text-sm">
-          Перейдите в Telegram и нажмите «Войти» у нашего бота, чтобы авторизоваться
+          {t('modals.goToTelegramAndLogin')}
         </p>
         <ActionButton onClick={handleTelegramAuth}>
-          Перейти в Telegram
+          {t('modals.goToTelegram')}
         </ActionButton>
       </div>
     </Modal>

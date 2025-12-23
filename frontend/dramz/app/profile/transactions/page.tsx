@@ -3,38 +3,39 @@
 import { useState } from 'react'
 import CrownIcon from '../../components/CrownIcon'
 import TransactionDetailModal from '../../components/TransactionDetailModal'
+import { useTranslation } from '../../hooks/useTranslation'
 
-const MOCK_TRANSACTIONS = [
+const getMockTransactions = (t: (key: string) => string) => [
   {
     id: 1,
     type: 'purchase',
-    description: 'Покупка серий',
+    description: t('profile.purchaseSeries'),
     amount: -10,
     crowns: -10,
     usdt: -5,
     date: '04.10.2025',
     time: '12:21',
     seriesName: 'Love is Evil',
-    seriesCount: '20 серий',
+    seriesCount: '20',
     paymentMethod: 'VISA'
   },
   {
     id: 2,
     type: 'purchase',
-    description: 'Покупка серий',
+    description: t('profile.purchaseSeries'),
     amount: -10,
     crowns: 0,
     usdt: -10,
     date: '04.10.2025',
     time: '12:21',
     seriesName: 'Another Series',
-    seriesCount: '10 серий',
+    seriesCount: '10',
     paymentMethod: 'VISA'
   },
   {
     id: 3,
     type: 'activity',
-    description: 'Активность',
+    description: t('profile.activity'),
     amount: 20,
     crowns: 20,
     usdt: 0,
@@ -44,7 +45,7 @@ const MOCK_TRANSACTIONS = [
   {
     id: 4,
     type: 'activity',
-    description: 'Активность',
+    description: t('profile.activity'),
     amount: 1,
     crowns: 1,
     usdt: 0,
@@ -54,7 +55,7 @@ const MOCK_TRANSACTIONS = [
   {
     id: 5,
     type: 'activity',
-    description: 'Активность',
+    description: t('profile.activity'),
     amount: 5,
     crowns: 5,
     usdt: 0,
@@ -70,12 +71,14 @@ const RedCrownIcon = ({ className }: { className?: string }) => (
 )
 
 export default function TransactionsPage() {
+  const { t } = useTranslation()
+  const MOCK_TRANSACTIONS = getMockTransactions(t)
   const [selectedTransaction, setSelectedTransaction] = useState<typeof MOCK_TRANSACTIONS[0] | null>(null)
 
   return (
     <main className="w-full">
       <section className="px-8 pt-4">
-        <h1 className="text-2xl font-bold text-white mb-6">История транзакций</h1>
+        <h1 className="text-2xl font-bold text-white mb-6">{t('transactions.transactionHistory')}</h1>
         <div className="space-y-0">
           {MOCK_TRANSACTIONS.map((transaction) => (
             <button

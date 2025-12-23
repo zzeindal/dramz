@@ -16,6 +16,14 @@ function getCookie(name: string): string | null {
   return null
 }
 
+function checkAndShowTermsModal(store: AppStore) {
+  if (typeof window === 'undefined') return
+  const termsAccepted = localStorage.getItem('termsAccepted')
+  if (!termsAccepted) {
+    store.dispatch(openModal({ name: 'terms' }))
+  }
+}
+
 export default function Providers({ initialUser, children }: { initialUser?: TelegramUser | null, children: React.ReactNode }) {
   const storeRef = useRef<AppStore | null>(null)
   if (!storeRef.current) storeRef.current = makeStore()
@@ -55,14 +63,7 @@ export default function Providers({ initialUser, children }: { initialUser?: Tel
                 last_name: profile.displayName?.split(' ').slice(1).join(' ') || undefined
               }
               storeRef.current.dispatch(setUser(user))
-              const apiUserData = {
-                telegramId: profile.telegramId,
-                username: profile.username || null,
-                displayName: profile.displayName || null,
-                crowns: profile.crowns,
-                referralCode: profile.referralCode
-              }
-              storeRef.current.dispatch(setApiUser(apiUserData))
+              storeRef.current.dispatch(setApiUser(profile))
               if (profile.referralCode) {
                 storeRef.current.dispatch(setReferralCode(profile.referralCode))
               }
@@ -71,10 +72,11 @@ export default function Providers({ initialUser, children }: { initialUser?: Tel
               const webApp = w?.Telegram?.WebApp
               const isTelegram = !!webApp
               
-              if (!isTelegram && !apiUserData.username) {
+              if (!isTelegram && !profile.username) {
                 storeRef.current.dispatch(openModal({ name: 'noUsername' }))
               } else {
                 storeRef.current.dispatch(closeModal())
+                checkAndShowTermsModal(storeRef.current)
               }
             }
           } catch (error) {
@@ -83,6 +85,7 @@ export default function Providers({ initialUser, children }: { initialUser?: Tel
           
           if (!storeRef.current.getState().ui.modal) {
             storeRef.current.dispatch(closeModal())
+            checkAndShowTermsModal(storeRef.current)
           }
           
           const newUrl = new URL(window.location.href)
@@ -159,18 +162,12 @@ export default function Providers({ initialUser, children }: { initialUser?: Tel
                     last_name: profile.displayName?.split(' ').slice(1).join(' ') || undefined
                   }
                   storeRef.current.dispatch(setUser(user))
-                  const apiUserData = {
-                    telegramId: profile.telegramId,
-                    username: profile.username || null,
-                    displayName: profile.displayName || null,
-                    crowns: profile.crowns,
-                    referralCode: profile.referralCode
-                  }
-                  storeRef.current.dispatch(setApiUser(apiUserData))
+                  storeRef.current.dispatch(setApiUser(profile))
                   if (profile.referralCode) {
                     storeRef.current.dispatch(setReferralCode(profile.referralCode))
                   }
                   storeRef.current.dispatch(closeModal())
+                  checkAndShowTermsModal(storeRef.current)
                   
                   const newUrl = new URL(window.location.href)
                   newUrl.searchParams.delete('token')
@@ -207,14 +204,7 @@ export default function Providers({ initialUser, children }: { initialUser?: Tel
                 }
                 storeRef.current.dispatch(setUser(user))
                 storeRef.current.dispatch(setAccessToken(token))
-                const apiUserData = {
-                  telegramId: profile.telegramId,
-                  username: profile.username || null,
-                  displayName: profile.displayName || null,
-                  crowns: profile.crowns,
-                  referralCode: profile.referralCode
-                }
-                storeRef.current.dispatch(setApiUser(apiUserData))
+                storeRef.current.dispatch(setApiUser(profile))
                 if (profile.referralCode) {
                   storeRef.current.dispatch(setReferralCode(profile.referralCode))
                 }
@@ -223,10 +213,11 @@ export default function Providers({ initialUser, children }: { initialUser?: Tel
                 const webApp = w?.Telegram?.WebApp
                 const isTelegram = !!webApp
                 
-                if (!isTelegram && !apiUserData.username) {
+                if (!isTelegram && !profile.username) {
                   storeRef.current.dispatch(openModal({ name: 'noUsername' }))
                 } else {
                   storeRef.current.dispatch(closeModal())
+                  checkAndShowTermsModal(storeRef.current)
                 }
                 storeRef.current.dispatch(setInitialized(true))
                 return
@@ -308,6 +299,78 @@ export default function Providers({ initialUser, children }: { initialUser?: Tel
     checkUsername()
 
     const unsubscribe = storeRef.current.subscribe(checkUsername)
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!storeRef.current) return
+    if (typeof window === 'undefined') return
+
+    let hasRefreshedProfile = false
+
+    const checkTerms = () => {
+      if (!storeRef.current) return
+      const state = storeRef.current.getState()
+      if (!state) return
+
+      const accessToken = state.auth.accessToken
+      const initialized = state.auth.initialized
+      const currentModal = state.ui.modal
+
+      if (!initialized || !accessToken) return
+
+      const termsAccepted = localStorage.getItem('termsAccepted')
+      if (!termsAccepted && currentModal !== 'terms' && currentModal !== 'login' && currentModal !== 'noUsername') {
+        storeRef.current.dispatch(openModal({ name: 'terms' }))
+      }
+    }
+
+    const refreshProfile = async () => {
+      if (!storeRef.current || hasRefreshedProfile) return
+      const state = storeRef.current.getState()
+      if (!state) return
+
+      const accessToken = state.auth.accessToken
+      const initialized = state.auth.initialized
+
+      if (!initialized || !accessToken) return
+
+      hasRefreshedProfile = true
+
+      try {
+        const profile = await getUserProfile(accessToken)
+        if (profile && storeRef.current) {
+          const user: TelegramUser = {
+            id: profile.telegramId,
+            username: profile.username || undefined,
+            first_name: profile.displayName?.split(' ')[0] || undefined,
+            last_name: profile.displayName?.split(' ').slice(1).join(' ') || undefined
+          }
+          storeRef.current.dispatch(setUser(user))
+          storeRef.current.dispatch(setApiUser(profile))
+          if (profile.referralCode) {
+            storeRef.current.dispatch(setReferralCode(profile.referralCode))
+          }
+        }
+      } catch (error) {
+        console.error('Failed to refresh user profile:', error)
+        hasRefreshedProfile = false
+      }
+    }
+
+    const checkAndRefresh = () => {
+      checkTerms()
+      refreshProfile()
+    }
+
+    checkAndRefresh()
+
+    const unsubscribe = storeRef.current.subscribe(() => {
+      checkTerms()
+    })
 
     return () => {
       unsubscribe()

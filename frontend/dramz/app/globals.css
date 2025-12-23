@@ -138,6 +138,18 @@ body {
   scroll-behavior: smooth;
 }
 
+.game-touch-layer {
+  touch-action: none;
+}
+
+.game-page img {
+  object-fit: contain !important;
+}
+
+.game-touch-layer {
+  touch-action: none;
+}
+
 input[type="range"].slider {
   -webkit-appearance: none;
   background-color: #3D2A8D;

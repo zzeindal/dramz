@@ -13,6 +13,7 @@ type Series = {
   title: string
   description: string
   price: number
+  freeEpisodesCount?: number
   isVisible?: boolean
   coverUrl?: string
 }
@@ -24,6 +25,7 @@ export default function EditSeriesPage() {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState<number | "">("")
+  const [freeEpisodesCount, setFreeEpisodesCount] = useState<number | "">("")
   const [isVisible, setIsVisible] = useState<boolean | null>(null)
   const [cover, setCover] = useState<File | null>(null)
   const [loading, setLoading] = useState(true)
@@ -40,6 +42,7 @@ export default function EditSeriesPage() {
         setTitle(data.title)
         setDescription(data.description)
         setPrice(data.price)
+        setFreeEpisodesCount(data.freeEpisodesCount ?? "")
         setIsVisible(data.isVisible ?? null)
       } catch (e: any) {
         setError(e.message || "Не удалось загрузить")
@@ -58,6 +61,9 @@ export default function EditSeriesPage() {
       if (title) fd.append("title", title)
       if (description) fd.append("description", description)
       if (price !== "" && !Number.isNaN(price)) fd.append("price", String(price))
+      if (freeEpisodesCount !== "" && !Number.isNaN(freeEpisodesCount)) {
+        fd.append("freeEpisodesCount", String(freeEpisodesCount))
+      }
       if (typeof isVisible === "boolean") fd.append("isVisible", JSON.stringify(isVisible))
       if (cover) fd.append("cover", cover)
       await apiUpload(`/admin/series/${id}`, fd, 'PUT')
@@ -92,6 +98,10 @@ export default function EditSeriesPage() {
         <div>
           <Label>Цена</Label>
           <Input type="number" defaultValue={item.price} onChange={e => setPrice(Number(e.target.value))} />
+        </div>
+        <div>
+          <Label>Количество бесплатных эпизодов</Label>
+          <Input type="number" defaultValue={item.freeEpisodesCount ?? ""} onChange={e => setFreeEpisodesCount(e.target.value === "" ? "" : Number(e.target.value))} />
         </div>
         <div className="flex items-center gap-3">
           <input type="checkbox" checked={!!isVisible} onChange={e => setIsVisible(e.target.checked)} />

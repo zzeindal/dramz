@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react'
 import { useCrownExchangeRate } from '@/hooks/useCrownExchangeRate'
 import { useSeriesEpisodes } from '@/hooks/useSeriesEpisodes'
 import CrownIcon from './CrownIcon'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function PurchaseModal() {
   const open = useSelector((s: RootState) => s.ui.modal === 'purchase')
@@ -32,12 +33,13 @@ export default function PurchaseModal() {
   }, [rate, maxCrowns, basePrice])
   const { data: episodesData } = useSeriesEpisodes(seriesId)
   const episodesCount = episodesData?.episodes?.length ?? 0
+  const { t } = useTranslation()
 
   return (
-    <Modal open={open} onClose={() => dispatch(closeModal())} title="Покупка">
+    <Modal open={open} onClose={() => dispatch(closeModal())} title={t('modals.purchase')}>
       {!show ? null : (
         <div className="space-y-3">
-          <div className="text-white/70 text-sm">Подтвердите покупку</div>
+          <div className="text-white/70 text-sm">{t('modals.confirmPurchase')}</div>
           <div className="space-y-3">
             <div
               style={{
@@ -53,7 +55,7 @@ export default function PurchaseModal() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                <div className="text-xs text-white/60">Сериал</div>
+                <div className="text-xs text-white/60">{t('modals.series')}</div>
                 <div className="text-sm mt-1">{show.title}</div>
               </div>
             </div>
@@ -71,7 +73,7 @@ export default function PurchaseModal() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                <div className="text-xs text-white/60">Кол-во серий</div>
+                <div className="text-xs text-white/60">{t('modals.episodeCount')}</div>
                 <div className="text-sm mt-1">{episodesCount || '-'}</div>
               </div>
             </div>
@@ -89,7 +91,7 @@ export default function PurchaseModal() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                <div className="text-xs text-white/60">Способ оплат</div>
+                <div className="text-xs text-white/60">{t('modals.paymentMethod')}</div>
                 <div className="mt-2 flex items-center gap-2" style={{ pointerEvents: 'auto' }}>
                   <button onClick={() => setMethod('visa')} className={`px-3 py-2 rounded-lg text-sm ${method === 'visa' ? 'bg-white text-black' : 'bg-white/10 text-white'}`}>VISA</button>
                   <button onClick={() => setMethod('usdt')} className={`px-3 py-2 rounded-lg text-sm ${method === 'usdt' ? 'bg-white text-black' : 'bg-white/10 text-white'}`}>USDT</button>
@@ -111,7 +113,7 @@ export default function PurchaseModal() {
                 }}
               >
                 <div className="text-xs text-white/60 flex items-center justify-between">
-                  <div>Добавить короны для скидки</div>
+                  <div>{t('modals.addCrownsForDiscount')}</div>
                   <div className="flex items-center gap-1">1 USDT - {crownsPerUsdt} <CrownIcon /></div>
                 </div>
                 <div className="mt-2 flex items-center gap-2" style={{ pointerEvents: 'auto' }}>
@@ -135,7 +137,7 @@ export default function PurchaseModal() {
                     backgroundColor: 'rgba(20, 16, 38, 0.9)'
                   }}
                 >
-                  <div className="text-xs text-white/60">Скидка коронами</div>
+                  <div className="text-xs text-white/60">{t('modals.crownDiscount')}</div>
                   <div className="text-sm mt-1 flex items-center gap-1">{crowns} <CrownIcon /> = {discount.toFixed(0)} USDT</div>
                 </div>
               </div>
@@ -153,7 +155,7 @@ export default function PurchaseModal() {
                     backgroundColor: 'rgba(20, 16, 38, 0.9)'
                   }}
                 >
-                  <div className="text-xs text-white/60">Сумма к оплате</div>
+                  <div className="text-xs text-white/60">{t('modals.amountToPay')}</div>
                   <div className="text-sm mt-1">{total.toFixed(0)} USDT</div>
                 </div>
               </div>

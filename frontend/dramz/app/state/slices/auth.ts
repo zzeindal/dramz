@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { GetTokenResponseUser } from '@/types/api'
+import type { GetTokenResponseUser, UserProfile } from '@/types/api'
 
 export type TelegramUser = {
   id: number
@@ -12,7 +12,7 @@ export type TelegramUser = {
 export type AuthState = {
   user: TelegramUser | null
   accessToken: string | null
-  apiUser: GetTokenResponseUser | null
+  apiUser: (GetTokenResponseUser | UserProfile) | null
   displayName: string | null
   referralCode: string | null
   initialized: boolean
@@ -53,7 +53,7 @@ const authSlice = createSlice({
         }
       }
     },
-    setApiUser(state, action: PayloadAction<GetTokenResponseUser | null>) {
+    setApiUser(state, action: PayloadAction<(GetTokenResponseUser | UserProfile) | null>) {
       state.apiUser = action.payload
     },
     setDisplayName(state, action: PayloadAction<string | null>) {

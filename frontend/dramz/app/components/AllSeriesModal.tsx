@@ -7,6 +7,7 @@ import { closeModal } from '../state/slices/ui'
 import { useRouter } from 'next/navigation'
 import { useSeriesList } from '@/hooks/useSeriesList'
 import { API_BASE_URL } from '@/lib/api/client'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function AllSeriesModal() {
   const open = useSelector((s: RootState) => s.ui.modal === 'allSeries')
@@ -14,6 +15,7 @@ export default function AllSeriesModal() {
   const router = useRouter()
   const { data, loading, error } = useSeriesList()
   const series = data || []
+  const { t } = useTranslation()
 
   const handleSeriesClick = (series: any) => {
     dispatch(closeModal())
@@ -21,7 +23,7 @@ export default function AllSeriesModal() {
   }
 
   return (
-    <Modal open={open} onClose={() => dispatch(closeModal())} title="Все новинки">
+    <Modal open={open} onClose={() => dispatch(closeModal())} title={t('modals.allNewReleases')}>
       <div className="space-y-3 max-h-[70vh] overflow-y-auto">
         {loading && (
           <>
@@ -39,7 +41,7 @@ export default function AllSeriesModal() {
         )}
         {!loading && error && (
           <div className="text-xs text-red-300 text-center py-4">
-            Не удалось загрузить сериалы
+            {t('modals.failedToLoadSeries')}
           </div>
         )}
         {!loading && !error && series.map((item) => (
@@ -67,14 +69,14 @@ export default function AllSeriesModal() {
                 }}
                 className="mt-2 w-full h-10 rounded-xl primary text-sm"
               >
-                Смотреть
+                {t('modals.watch')}
               </button>
             </div>
           </div>
         ))}
         {!loading && !error && series.length === 0 && (
           <div className="text-xs text-white/70 text-center py-4">
-            Сериалы пока недоступны
+            {t('modals.seriesNotAvailable')}
           </div>
         )}
       </div>

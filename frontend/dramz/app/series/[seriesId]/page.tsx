@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useSeriesEpisodes } from '@/hooks/useSeriesEpisodes'
 import { API_BASE_URL } from '@/lib/api/client'
 import CrownIcon from '../../components/CrownIcon'
+import { useTranslation } from '../../hooks/useTranslation'
 
 export default function SeriesDetailPage() {
   const params = useParams()
@@ -11,6 +12,7 @@ export default function SeriesDetailPage() {
   const seriesId = params?.seriesId as string
   const { data: episodesData, loading, error } = useSeriesEpisodes(seriesId)
   const show = episodesData?.series
+  const { t } = useTranslation()
 
   const handleWatch = () => {
     router.push(`/watch/${seriesId}`)
@@ -49,7 +51,7 @@ export default function SeriesDetailPage() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                <div>Не удалось загрузить сериал. Попробуйте позже.</div>
+                <div>{t('series.failedToLoadSeries')}</div>
                 {process.env.NODE_ENV === 'development' && (
                   <div className="text-xs text-red-400 mt-2 break-all">{error}</div>
                 )}
@@ -68,7 +70,7 @@ export default function SeriesDetailPage() {
               <div className="text-center mt-4 text-[28px] font-semibold">
                 {show.title}
               </div>
-              <div className="text-center text-[12px] text-white/70 px-10">
+              <div className="text-center text-[14px] font-medium text-white/80 px-8 mt-2">
                 {show.description}
               </div>
               <div className="mt-3 space-y-3">
@@ -79,7 +81,7 @@ export default function SeriesDetailPage() {
                   <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0.790849 10.6667C0.921569 10.6667 1.04466 10.6421 1.16013 10.5929C1.2756 10.5437 1.40087 10.4833 1.53595 10.4117L9.93467 6.23229C10.2135 6.08917 10.4052 5.94829 10.5098 5.80965C10.6144 5.671 10.6667 5.51223 10.6667 5.33334C10.6667 5.15444 10.6144 4.99567 10.5098 4.85703C10.4052 4.71838 10.2135 4.57974 9.93467 4.44109L1.53595 0.254927C1.39651 0.187841 1.26906 0.128581 1.15359 0.0771487C1.03812 0.0257162 0.915032 0 0.784317 0C0.544664 0 0.354031 0.0872118 0.212418 0.261635C0.0708061 0.436059 0 0.668624 0 0.95933L0.00653594 9.70733C0.00653594 9.99805 0.0773419 10.2306 0.218954 10.405C0.360566 10.5794 0.551198 10.6667 0.790849 10.6667Z" fill="white" fillOpacity="0.8" />
                   </svg>
-                  <span>Смотреть первые 10 серий</span>
+                  <span>{t('series.watchFirst10Episodes')}</span>
                 </button>
                 <button
                   onClick={handleBuy}
@@ -88,7 +90,7 @@ export default function SeriesDetailPage() {
                     background: 'linear-gradient(135deg, #8F37FF 0%, #AC6BFF 100%)'
                   }}
                 >
-                  <span>Купить сразу все серии</span>
+                  <span>{t('series.buyAllEpisodes')}</span>
                   <CrownIcon />
                 </button>
               </div>
@@ -109,7 +111,7 @@ export default function SeriesDetailPage() {
                   backgroundColor: 'rgba(20, 16, 38, 0.9)'
                 }}
               >
-                Сериал не найден
+                {t('series.seriesNotFound')}
               </div>
             </div>
           )}

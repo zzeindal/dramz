@@ -46,14 +46,14 @@ export default function AllReferralsPage() {
       <Header />
       <section className="px-4 pt-4 relative z-10">
         <div className="flex items-center gap-3 mb-6">
-          <h1 className="text-xl font-bold text-white">Ваши рефераллы</h1>
+          <h1 className="text-xl font-bold text-white">{t('referrals.yourReferrals')}</h1>
         </div>
 
         <div className="space-y-0">
           {loading ? (
-            <div className="text-white/70 text-sm text-center py-8">Loading...</div>
+            <div className="text-white/70 text-sm text-center py-8">{t('referrals.loading')}</div>
           ) : referrals.length === 0 ? (
-            <div className="text-white/70 text-sm text-center py-8">No referrals yet</div>
+            <div className="text-white/70 text-sm text-center py-8">{t('profile.noReferrals')}</div>
           ) : (
             referrals.map((referral, index) => (
               <div

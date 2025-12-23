@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import * as crypto from 'crypto';
+const crypto = require('crypto');
 
 @Injectable()
 export class TelegramAuthService {

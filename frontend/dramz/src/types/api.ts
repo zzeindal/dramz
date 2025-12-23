@@ -39,6 +39,7 @@ export type CrownExchangeRate = {
 export type GetTokenRequest = {
   initData: string
   referralCode?: string
+  sessionId?: string
 }
 
 export type GetTokenResponseUser = {
@@ -50,8 +51,16 @@ export type GetTokenResponseUser = {
 }
 
 export type GetTokenResponse = {
+  success: boolean
+  message: string
   accessToken: string
   user: GetTokenResponseUser
+  sentViaSSE?: boolean
+}
+
+export type SessionResponse = {
+  sessionId: string
+  sseUrl: string
 }
 
 export type UserBalance = {
@@ -162,7 +171,7 @@ export type ApiTask = {
   title: string
   description: string
   reward: number
-  type: 'manual' | 'automatic'
+  type: 'manual' | 'like_series' | 'watch_series' | 'invite_referral'
   link?: string | null
   canComplete: boolean
   nextAvailableAt?: string | null
@@ -203,5 +212,41 @@ export type CompleteTaskResponse = {
 
 export type TaskHistoryResponse = {
   completions: TaskCompletion[]
+}
+
+export type GameState = {
+  lives: number
+  maxLives: number
+  canPlay: boolean
+  nextPlayAvailableAt: string | null
+  lastPlayedAt: string | null
+}
+
+export type GameReward = {
+  rewardType: 'small' | 'medium' | 'large' | 'series'
+  crownsAmount: number
+  seriesId?: string | null
+  seriesTitle?: string | null
+}
+
+export type PlayGameResponse = {
+  success: boolean
+  reward: GameReward
+  remainingLives: number
+  nextPlayAvailableAt: string
+}
+
+export type GameRewardHistoryItem = {
+  rewardType: 'small' | 'medium' | 'large' | 'series'
+  crownsAmount: number
+  series: {
+    id: string
+    title: string
+  } | null
+  rewardedAt: string
+}
+
+export type GameRewardsHistoryResponse = {
+  rewards: GameRewardHistoryItem[]
 }
 

@@ -13,6 +13,8 @@ import {
   PieChartIcon,
   PlugInIcon,
   UserCircleIcon,
+  DocsIcon,
+  TaskIcon,
 } from "../icons/index";
 
 type NavItem = {
@@ -52,6 +54,16 @@ const navItems: NavItem[] = [
     icon: <DollarLineIcon />,
     name: "Exchange Rate",
     path: "/exchange-rate",
+  },
+  {
+    icon: <DocsIcon />,
+    name: "FAQ",
+    path: "/faq",
+  },
+  {
+    icon: <TaskIcon />,
+    name: "Tasks",
+    path: "/tasks",
   },
   // {
   //   icon: <CalenderIcon />,

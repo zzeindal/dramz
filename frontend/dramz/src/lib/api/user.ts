@@ -7,6 +7,7 @@ import type {
   PurchaseCrownsResponse,
   ReferralsResponse,
   RegisterUserRequest,
+  SessionResponse,
   UserBalance,
   UserProfile
 } from '@/types/api'
@@ -57,5 +58,16 @@ export async function getUserReferrals(token: string) {
   return apiFetch<ReferralsResponse>('/user/referrals', {
     method: 'GET'
   }, { token })
+}
+
+export async function getSession() {
+  return apiFetch<SessionResponse>('/user/session', {
+    method: 'GET'
+  })
+}
+
+export function createSSEConnection(sessionId: string): EventSource {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.dramz.fun'
+  return new EventSource(`${API_BASE_URL}/user/sse/${sessionId}`)
 }
 
