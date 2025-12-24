@@ -107,29 +107,64 @@ async function registerUser(user: any): Promise<boolean> {
   }
 }
 
-async function generateToken(user: any): Promise<string | null> {
+async function generateToken(user: any, sessionId?: string): Promise<string | null> {
   try {
-    await registerUser(user)
+    console.log('[WEBHOOK] generateToken - Starting, user:', user?.id, 'sessionId:', sessionId)
+    
+    if (!TELEGRAM_BOT_TOKEN) {
+      console.error('[WEBHOOK] ERROR: TELEGRAM_BOT_TOKEN is not set in generateToken!')
+      return null
+    }
+    
+    const registerResult = await registerUser(user)
+    console.log('[WEBHOOK] User registration result:', registerResult)
     
     const initData = buildInitData(user)
+    console.log('[WEBHOOK] InitData generated, length:', initData.length)
     
-    const response = await fetch(`${API_BASE_URL}/user/token`, {
+    const requestBody: any = { initData }
+    if (sessionId) {
+      requestBody.sessionId = sessionId
+      console.log('[WEBHOOK] Including sessionId in request')
+    }
+    
+    const url = `${API_BASE_URL}/user/token`
+    console.log('[WEBHOOK] Calling API:', url)
+    console.log('[WEBHOOK] Request body keys:', Object.keys(requestBody))
+    
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({ initData })
+      body: JSON.stringify(requestBody)
     })
+
+    console.log('[WEBHOOK] API Response status:', response.status, response.statusText)
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('[WEBHOOK] Failed to generate token - Status:', response.status, 'Response:', errorText)
+      console.error('[WEBHOOK] Failed to generate token - Status:', response.status)
+      console.error('[WEBHOOK] Error response:', errorText)
       return null
     }
 
     const data = await response.json()
+    console.log('[WEBHOOK] API Response data keys:', Object.keys(data))
+    console.log('[WEBHOOK] sentViaSSE:', data.sentViaSSE)
+    
+    if (sessionId && data.sentViaSSE) {
+      console.log('[WEBHOOK] Token sent via SSE')
+      return 'SSE_SENT'
+    }
+    
     const token = data.accessToken || data.token || null
+    if (token) {
+      console.log('[WEBHOOK] Token received, length:', token.length)
+    } else {
+      console.error('[WEBHOOK] No token in response!')
+    }
     return token
   } catch (error) {
     console.error('[WEBHOOK] Token generation error:', error)
@@ -157,16 +192,32 @@ function appendTokenParam(url: string, token: string): string {
   }
 }
 
-async function handleStartCommand(chatId: number, user: any) {
+const sessionStore = new Map<number, string>()
+
+async function handleStartCommand(chatId: number, user: any, sessionId?: string) {
   if (!TELEGRAM_BOT_TOKEN) {
+    console.error('[WEBHOOK] ERROR: TELEGRAM_BOT_TOKEN is not set in handleStartCommand!')
     await sendMessage(chatId, '❌ Бот не настроен. Обратитесь к администратору.')
     return
   }
 
   try {
-    const welcomeText = `🎬 Добро пожаловать в <b>DRAMZ</b>!
+    if (sessionId) {
+      sessionStore.set(chatId, sessionId)
+      console.log('[WEBHOOK] Stored sessionId for chatId:', chatId, 'sessionId:', sessionId)
+    } else {
+      console.log('[WEBHOOK] No sessionId provided for chatId:', chatId, '- user may have typed /start directly')
+    }
+
+    const welcomeText = sessionId 
+      ? `🎬 Добро пожаловать в <b>DRAMZ</b>!
 
 Чтобы продолжить, войдите в аккаунт.`
+      : `🎬 Добро пожаловать в <b>DRAMZ</b>!
+
+Чтобы продолжить, войдите в аккаунт.
+
+💡 <i>Совет: Для автоматической авторизации используйте ссылку с сайта.</i>`
 
     const replyMarkup = {
       inline_keyboard: [
@@ -186,11 +237,34 @@ async function handleStartCommand(chatId: number, user: any) {
 
 async function handleLoginAction(chatId: number, user: any) {
   try {
-    const token = await generateToken(user)
-    if (!token) {
-      console.error('[WEBHOOK] ERROR: Token generation failed! User:', user)
+    const sessionId = sessionStore.get(chatId)
+    console.log('[WEBHOOK] handleLoginAction - chatId:', chatId, 'sessionId:', sessionId, 'user:', user?.id)
+    
+    if (!TELEGRAM_BOT_TOKEN) {
+      console.error('[WEBHOOK] ERROR: TELEGRAM_BOT_TOKEN is not set!')
+      await sendMessage(chatId, '❌ Ошибка конфигурации бота. Обратитесь к администратору.')
+      return
     }
-    const webUrl = token ? appendTokenParam(WEB_APP_URL, token) : WEB_APP_URL
+    
+    const token = await generateToken(user, sessionId)
+    console.log('[WEBHOOK] Token generation result:', token ? (token === 'SSE_SENT' ? 'SSE_SENT' : 'TOKEN_RECEIVED') : 'FAILED')
+    
+    if (sessionId && token === 'SSE_SENT') {
+      await sendMessage(chatId, '✅ Авторизация успешна! Вернитесь на сайт — вы будете автоматически авторизованы.')
+      sessionStore.delete(chatId)
+      return
+    }
+    
+    if (!token) {
+      console.error('[WEBHOOK] ERROR: Token generation failed!')
+      console.error('[WEBHOOK] User:', JSON.stringify(user, null, 2))
+      console.error('[WEBHOOK] SessionId:', sessionId)
+      console.error('[WEBHOOK] API_BASE_URL:', API_BASE_URL)
+      await sendMessage(chatId, '❌ Ошибка авторизации. Попробуйте позже.')
+      return
+    }
+    
+    const webUrl = appendTokenParam(WEB_APP_URL, token)
     const webAppUrl = webUrl
 
     const text = `Готово! Выберите, где продолжить:`
@@ -207,9 +281,11 @@ async function handleLoginAction(chatId: number, user: any) {
     }
 
     await sendMessage(chatId, text, replyMarkup)
+    sessionStore.delete(chatId)
   } catch (error) {
     console.error('[WEBHOOK] Error handling login action:', error)
     await sendMessage(chatId, '❌ Произошла ошибка. Попробуйте позже.')
+    sessionStore.delete(chatId)
   }
 }
 
@@ -224,7 +300,9 @@ export async function POST(req: NextRequest) {
       const user = message.from
 
       if (text && text.startsWith('/start')) {
-        await handleStartCommand(chatId, user)
+        const parts = text.split(' ')
+        const sessionId = parts.length > 1 ? parts[1] : undefined
+        await handleStartCommand(chatId, user, sessionId)
       }
     }
 

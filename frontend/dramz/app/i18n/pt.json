@@ -140,6 +140,8 @@
     "goToTelegram": "Ir para o Telegram",
     "notAuthorized": "Você não está autorizado",
     "goToTelegramAndLogin": "Vá para o Telegram e clique em \"Entrar\" no nosso bot para autorizar",
+    "connecting": "Conectando...",
+    "waitingForAuth": "Aguardando autenticação...",
     "allNewReleases": "Todos os novos lançamentos",
     "failedToLoadSeries": "Falha ao carregar séries",
     "watch": "Assistir",

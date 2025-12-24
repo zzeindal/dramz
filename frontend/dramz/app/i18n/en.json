@@ -141,6 +141,8 @@
     "goToTelegram": "Go to Telegram",
     "notAuthorized": "You are not authorized",
     "goToTelegramAndLogin": "Go to Telegram and click \"Login\" on our bot to authorize",
+    "connecting": "Connecting...",
+    "waitingForAuth": "Waiting for authentication...",
     "allNewReleases": "All new releases",
     "failedToLoadSeries": "Failed to load series",
     "watch": "Watch",

@@ -140,6 +140,8 @@
     "goToTelegram": "Telegram पर जाएं",
     "notAuthorized": "आप अधिकृत नहीं हैं",
     "goToTelegramAndLogin": "अधिकृत करने के लिए Telegram पर जाएं और हमारे बॉट पर \"लॉगिन\" पर क्लिक करें",
+    "connecting": "कनेक्ट हो रहा है...",
+    "waitingForAuth": "प्रमाणीकरण की प्रतीक्षा कर रहे हैं...",
     "allNewReleases": "सभी नई रिलीज़",
     "failedToLoadSeries": "श्रृंखला लोड करने में विफल",
     "watch": "देखें",

@@ -7,6 +7,7 @@ import { setUser, setAccessToken, setApiUser, setReferralCode, setInitialized, T
 import { closeModal, openModal } from './state/slices/ui'
 import { initializeLanguage } from './state/slices/language'
 import { getAccessToken, getUserProfile } from '@/lib/api/user'
+import { setGlobalStore } from './state/storeRef'
 
 function getCookie(name: string): string | null {
   if (typeof document === 'undefined') return null
@@ -26,7 +27,10 @@ function checkAndShowTermsModal(store: AppStore) {
 
 export default function Providers({ initialUser, children }: { initialUser?: TelegramUser | null, children: React.ReactNode }) {
   const storeRef = useRef<AppStore | null>(null)
-  if (!storeRef.current) storeRef.current = makeStore()
+  if (!storeRef.current) {
+    storeRef.current = makeStore()
+    setGlobalStore(storeRef.current)
+  }
 
   useEffect(() => {
     if (typeof window === 'undefined') return

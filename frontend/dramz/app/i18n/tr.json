@@ -140,6 +140,8 @@
     "goToTelegram": "Telegram'a git",
     "notAuthorized": "Yetkili değilsiniz",
     "goToTelegramAndLogin": "Yetkilendirmek için Telegram'a gidin ve botumuzdaki \"Giriş\" düğmesine tıklayın",
+    "connecting": "Bağlanıyor...",
+    "waitingForAuth": "Kimlik doğrulama bekleniyor...",
     "allNewReleases": "Tüm yeni çıkışlar",
     "failedToLoadSeries": "Diziler yüklenemedi",
     "watch": "İzle",

@@ -141,6 +141,8 @@
     "goToTelegram": "Перейти в Telegram",
     "notAuthorized": "Вы не авторизованы",
     "goToTelegramAndLogin": "Перейдите в Telegram и нажмите «Войти» у нашего бота, чтобы авторизоваться",
+    "connecting": "Подключение...",
+    "waitingForAuth": "Ожидание авторизации...",
     "allNewReleases": "Все новинки",
     "failedToLoadSeries": "Не удалось загрузить сериалы",
     "watch": "Смотреть",

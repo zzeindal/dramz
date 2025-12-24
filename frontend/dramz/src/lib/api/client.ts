@@ -1,8 +1,30 @@
+import { getGlobalStore } from '../../../app/state/storeRef'
+import { setAccessToken, setUser, setApiUser } from '../../../app/state/slices/auth'
+import { openModal } from '../../../app/state/slices/ui'
+
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.dramz.fun'
 
 export type ApiRequestConfig = {
   token?: string
   isFormData?: boolean
+}
+
+function handleUnauthorized() {
+  if (typeof window === 'undefined') return
+
+  try {
+    const store = getGlobalStore()
+    if (store) {
+      localStorage.removeItem('accessToken')
+      document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+      store.dispatch(setAccessToken(null))
+      store.dispatch(setUser(null))
+      store.dispatch(setApiUser(null))
+      store.dispatch(openModal({ name: 'login' }))
+    }
+  } catch (error) {
+    console.error('Failed to handle unauthorized error:', error)
+  }
 }
 
 export async function apiFetch<T>(
@@ -47,13 +69,24 @@ export async function apiFetch<T>(
 
     if (!res.ok) {
       let message = `Request failed with status ${res.status}`
+      let errorData: any = null
+      
       try {
-        const data = await res.json() as { message?: string }
-        if (data && typeof data.message === 'string') {
-          message = data.message
+        const text = await res.text()
+        if (text) {
+          errorData = JSON.parse(text) as { message?: string; error?: string; statusCode?: number }
+          if (errorData && typeof errorData.message === 'string') {
+            message = errorData.message
+          }
         }
       } catch {
       }
+
+      if (res.status === 401 || (errorData && (errorData.statusCode === 401 || errorData.error === 'Unauthorized'))) {
+        handleUnauthorized()
+        throw new Error('Unauthorized: Token expired or invalid. Please authenticate again.')
+      }
+
       throw new Error(message)
     }
 
